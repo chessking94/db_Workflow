@@ -61,5 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Workflows.sql" />
+    <Build Include="dbo\Tables\Actions.sql" />
   </ItemGroup>
 </Project>
