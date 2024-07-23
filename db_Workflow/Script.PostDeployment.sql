@@ -91,7 +91,7 @@ BEGIN
 	PRINT 'Added db_datareader role to user'
 END
 
---the environment login should also have execute permissions on ChessWarehouse
+--the environment login should also have execute permissions on Workflow
 SET @xsql = '
 SELECT
 @execpermOUT = COUNT(dp.name)
@@ -117,27 +117,31 @@ END
 SET IDENTITY_INSERT dbo.EventStatuses ON
 
 INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '0', 'Pending', '0'
+SELECT '-2', 'Hold', '0'
+WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '-2')
+
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
+SELECT '-1', 'Error', '1'
+WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '-1')
+
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
+SELECT '0', 'Cancelled', '1'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '0')
 
 INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '1', 'Queued', '0'
+SELECT '1', 'Complete', '1'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '1')
 
 INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '2', 'Processing','0'
+SELECT '2', 'Pending', '0'
+WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '0')
+
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
+SELECT '3', 'Queued', '0'
+WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '1')
+
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
+SELECT '4', 'Processing','0'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '2')
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '3', 'Complete', '1'
-WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '3')
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '4', 'Cancelled', '1'
-WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '4')
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '5', 'Error', '1'
-WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '5')
 
 SET IDENTITY_INSERT dbo.EventStatuses OFF
