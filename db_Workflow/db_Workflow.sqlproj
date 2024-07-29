@@ -69,6 +69,8 @@
     <Build Include="dbo\Stored Procedures\disableApplication.sql" />
     <Build Include="dbo\Stored Procedures\disableAction.sql" />
     <Build Include="dbo\Stored Procedures\enableAction.sql" />
+    <Build Include="dbo\Stored Procedures\createEvent.sql" />
+    <Build Include="dbo\Stored Procedures\updateEventStatus.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
