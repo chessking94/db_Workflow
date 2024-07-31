@@ -134,14 +134,10 @@ WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusI
 
 INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
 SELECT '2', 'Pending', '0'
-WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '0')
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '3', 'Queued', '0'
-WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '1')
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '4', 'Processing','0'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '2')
+
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
+SELECT '3', 'Processing', '0'
+WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '3')
 
 SET IDENTITY_INSERT dbo.EventStatuses OFF
