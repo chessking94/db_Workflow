@@ -21,6 +21,11 @@ CREATE NONCLUSTERED INDEX [IDX_Events_actionID]
 
 
 GO
+CREATE NONCLUSTERED INDEX [IDX_Events_eventStatusStart]
+    ON [dbo].[Events]([eventStatusID] ASC, [eventStartDate] ASC);
+
+
+GO
 CREATE TRIGGER [dbo].[TRG_Events_AfterUpdate] ON [dbo].[Events]
 AFTER UPDATE
 
