@@ -114,30 +114,26 @@ END
 /* Insert seed data */
 --Schema: dbo
 ----Table: EventStatuses
-SET IDENTITY_INSERT dbo.EventStatuses ON
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '-2', 'Hold', '0'
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
+SELECT '-2', 'Hold', '1', '0'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '-2')
 
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '-1', 'Error', '1'
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
+SELECT '-1', 'Error', '0', '1'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '-1')
 
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '0', 'Cancelled', '1'
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
+SELECT '0', 'Cancelled', '0', '1'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '0')
 
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '1', 'Complete', '1'
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
+SELECT '1', 'Complete', '0', '1'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '1')
 
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '2', 'Pending', '0'
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
+SELECT '2', 'Pending', '0', '0'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '2')
 
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, isTerminal)
-SELECT '3', 'Processing', '0'
+INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
+SELECT '3', 'Processing', '1', '0'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '3')
-
-SET IDENTITY_INSERT dbo.EventStatuses OFF
