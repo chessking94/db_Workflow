@@ -1,4 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[enableAction] (@actionName AS VARCHAR(20))
+﻿CREATE PROCEDURE [dbo].[enableAction] (
+	@actionName VARCHAR(20)
+)
 
 AS
 

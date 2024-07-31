@@ -1,4 +1,7 @@
-﻿CREATE PROCEDURE [dbo].[updateEventStatus] (@eventID AS INT, @eventStatus AS VARCHAR(10))
+﻿CREATE PROCEDURE [dbo].[updateEventStatus] (
+	@eventID INT,
+	@eventStatus VARCHAR(10)
+)
 
 AS
 
