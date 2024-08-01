@@ -115,10 +115,6 @@ END
 --Schema: dbo
 ----Table: EventStatuses
 INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
-SELECT '-2', 'Hold', '1', '0'
-WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '-2')
-
-INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
 SELECT '-1', 'Error', '0', '1'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '-1')
 
