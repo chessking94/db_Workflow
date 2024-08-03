@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[updateEventStatus] (
 	@eventID INT,
-	@eventStatus VARCHAR(10)
+	@eventStatus VARCHAR(10),
+	@eventError VARCHAR(MAX) = NULL
 )
 
 AS
@@ -17,7 +18,7 @@ IF @errmsg IS NULL
 	IF EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = @eventStatus)
 	BEGIN
 		UPDATE dbo.Events
-		SET eventStatusID = @eventStatus
+		SET eventStatusID = @eventStatus, eventError = @eventError
 		WHERE eventID = @eventID
 	END
 
@@ -28,7 +29,7 @@ IF @errmsg IS NULL
 		IF @eventStatusID IS NOT NULL
 		BEGIN
 			UPDATE dbo.Events
-			SET eventStatusID = @eventStatusID
+			SET eventStatusID = @eventStatusID, eventError = @eventError
 			WHERE eventID = @eventID
 		END
 
