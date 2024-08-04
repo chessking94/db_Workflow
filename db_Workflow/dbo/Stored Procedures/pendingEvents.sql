@@ -7,6 +7,7 @@ SELECT
 e.eventID,
 a.actionID,
 app.applicationFilename,
+app.applicationDefaultParameter,
 e.eventParameters
 
 FROM dbo.Events e
