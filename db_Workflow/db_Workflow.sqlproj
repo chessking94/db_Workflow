@@ -73,6 +73,10 @@
     <Build Include="dbo\Stored Procedures\updateEventStatus.sql" />
     <Build Include="dbo\Stored Procedures\canStartEvent.sql" />
     <Build Include="dbo\Stored Procedures\pendingEvents.sql" />
+    <Build Include="dbo\Tables\Workflows.sql" />
+    <Build Include="dbo\Tables\WorkflowActions.sql" />
+    <Build Include="dbo\Tables\stage_WorkflowActions.sql" />
+    <Build Include="dbo\Stored Procedures\createWorkflowActions.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />

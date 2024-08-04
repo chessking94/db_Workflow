@@ -9,5 +9,5 @@
 	[applicationID] INT NULL,
     CONSTRAINT [PK_Actions] PRIMARY KEY CLUSTERED ([actionID] ASC),
 	CONSTRAINT [UC_Actions_Name] UNIQUE NONCLUSTERED ([actionName] ASC),
-	CONSTRAINT [FK_Actions_applicationID] FOREIGN KEY ([applicationID]) REFERENCES [dbo].[Applications] ([applicationID])
+	CONSTRAINT [FK_Actions_Applications] FOREIGN KEY ([applicationID]) REFERENCES [dbo].[Applications] ([applicationID])
 )
