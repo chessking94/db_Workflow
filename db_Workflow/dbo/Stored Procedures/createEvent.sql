@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[createEvent] (
-	@actionName VARCHAR(20),
+	@workflowID SMALLINT = NULL,
+	@stepNumber TINYINT = NULL,
+	@actionName VARCHAR(20) = NULL,
 	@eventParameters VARCHAR(250) = NULL,
 	@eventStartDate DATETIME = NULL
 )
@@ -7,47 +9,67 @@
 AS
 
 DECLARE @errmsg NVARCHAR(128)
+DECLARE @actionID INT
 
-IF EXISTS (SELECT actionID FROM dbo.Actions WHERE actionID = @actionName)
+IF (@workflowID IS NOT NULL OR @stepNumber IS NOT NULL)
 BEGIN
-	IF @eventStartDate IS NULL
+	--if workflow info is provided, override the provided actionName with what is associated with the workflow step
+	SET @actionID = (SELECT actionID FROM dbo.WorkflowActions WHERE workflowID = @workflowID AND stepNumber = @stepNumber)
+	IF @actionID IS NOT NULL
 	BEGIN
-		INSERT INTO dbo.Events (actionID, eventParameters)
-		SELECT @actionName, @eventParameters
+		SET @actionName = @actionID
 	END
 
 	ELSE
 
 	BEGIN
-		INSERT INTO dbo.Events (actionID, eventParameters, eventStartDate)
-		SELECT @actionName, @eventParameters, @eventStartDate
+		SET @errmsg = 'Invalid workflow/step number combination!'
 	END
 END
 
-ELSE
-
+IF @errmsg IS NULL
 BEGIN
-	DECLARE @actionID INT = (SELECT actionID FROM dbo.Actions WHERE actionName = @actionName)
-	IF @actionID IS NOT NULL
+	IF EXISTS (SELECT actionID FROM dbo.Actions WHERE actionID = @actionName)
 	BEGIN
 		IF @eventStartDate IS NULL
 		BEGIN
 			INSERT INTO dbo.Events (actionID, eventParameters)
-			SELECT @actionID, @eventParameters
+			SELECT @actionName, @eventParameters
 		END
 
 		ELSE
 
 		BEGIN
 			INSERT INTO dbo.Events (actionID, eventParameters, eventStartDate)
-			SELECT @actionID, @eventParameters, @eventStartDate
+			SELECT @actionName, @eventParameters, @eventStartDate
 		END
 	END
 
 	ELSE
 
 	BEGIN
-		SET @errmsg = 'actioName parameter not a key or action name!'
+		SET @actionID = (SELECT actionID FROM dbo.Actions WHERE actionName = @actionName)
+		IF @actionID IS NOT NULL
+		BEGIN
+			IF @eventStartDate IS NULL
+			BEGIN
+				INSERT INTO dbo.Events (actionID, eventParameters)
+				SELECT @actionID, @eventParameters
+			END
+
+			ELSE
+
+			BEGIN
+				INSERT INTO dbo.Events (actionID, eventParameters, eventStartDate)
+				SELECT @actionID, @eventParameters, @eventStartDate
+			END
+		END
+
+		ELSE
+
+		BEGIN
+			SET @errmsg = 'actionName parameter not a key or action name!'
+		END
 	END
 END
 

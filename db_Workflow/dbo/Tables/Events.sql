@@ -6,11 +6,11 @@
 	[stepNumber] TINYINT NULL,
 	[actionID] INT NOT NULL,
 	[eventParameters] VARCHAR(250) NULL,
-	[eventStatusID] SMALLINT CONSTRAINT [DF_Events_Status] DEFAULT ((0)) NOT NULL,
+	[eventStatusID] SMALLINT CONSTRAINT [DF_Events_Status] DEFAULT ((2)) NOT NULL,
 	[eventStatusDate] DATETIME CONSTRAINT [DF_Events_StatusDate] DEFAULT (getdate()) NOT NULL,
 	[eventStartDate] DATETIME CONSTRAINT [DF_Events_StartDate] DEFAULT (getdate()) NOT NULL,
 	[eventEndDate] DATETIME NULL,
-	[eventError] VARCHAR(MAX) NULL,
+	[eventNote] VARCHAR(MAX) NULL,
     CONSTRAINT [PK_Events] PRIMARY KEY CLUSTERED ([eventID] ASC),
 	CONSTRAINT [FK_Events_Actions] FOREIGN KEY ([actionID]) REFERENCES [dbo].[Actions] ([actionID]),
 	CONSTRAINT [FK_Events_EventStatuses] FOREIGN KEY ([eventStatusID]) REFERENCES [dbo].[EventStatuses] ([eventStatusID]),
@@ -48,11 +48,11 @@ BEGIN
 		e.eventStatusDate = i.eventStatusDate,
 		e.eventStartDate = i.eventStartDate,
 		e.eventEndDate = i.eventEndDate,
-		e.eventError = i.eventError
+		e.eventNote = i.eventNote
 
 	FROM dbo.Events e
 	JOIN dbo.EventStatuses es ON e.eventStatusID = es.eventStatusID
-	JOIN inserted i ON e.eventID = i.EventID
+	JOIN inserted i ON e.eventID = i.eventID
 
 	WHERE es.isTerminal = 0  --only allow updates to records not already marked in a terminal status
 END
@@ -69,6 +69,7 @@ BEGIN
 	--update dates
 	UPDATE e
 	SET e.eventStatusDate = GETDATE(),
+		e.eventStartDate = (CASE WHEN es.inProgress = 1 THEN GETDATE() ELSE e.eventStartDate END),
 		e.eventEndDate = (CASE WHEN es.isTerminal = 1 THEN GETDATE() ELSE NULL END)
 
 	FROM dbo.Events e
@@ -82,7 +83,8 @@ BEGIN
 	SET eventStatusID = 0,
 		--since this is in a trigger, need to set the status and end dates directly (trigger won't fire the trigger)
 		eventStatusDate = GETDATE(),
-		eventEndDate = GETDATE()
+		eventEndDate = GETDATE(),
+		eventNote = 'Previous workflow step error'
 	
 	WHERE eventID IN (
 		SELECT

@@ -5,29 +5,34 @@
 AS
 
 --validation to determine if the event should be cancelled
-DECLARE @cancelEvent BIT = 0
-DECLARE @cancelEventReason VARCHAR(MAX)
+DECLARE @foundError BIT = 0
+DECLARE @eventStatusID SMALLINT
+DECLARE @eventNote VARCHAR(MAX)
 
-----is action active?
-IF @cancelEvent = 0
+----is workflow active?
+IF @foundError = 0
 BEGIN
 	SELECT
-	@cancelEvent = 1 - CAST(a.actionActive AS TINYINT)
+	@foundError = 1 - CAST(ISNULL(w.workflowActive, 1) AS TINYINT)
 
 	FROM dbo.Events e
-	JOIN dbo.Actions a ON
-		e.actionID = a.actionID
-
+	JOIN dbo.Workflows w ON
+		e.workflowID = w.workflowID
+	
 	WHERE e.eventID = @eventID
 
-	IF @cancelEvent = 1 SET @cancelEventReason = 'Active inactive'
+	IF @foundError = 1
+	BEGIN
+		SET @eventStatusID = 0
+		SET @eventNote = 'Workflow inactive'
+	END
 END
 
 ----is application active?
-IF @cancelEvent = 0
+IF @foundError = 0
 BEGIN
 	SELECT
-	@cancelEvent = 1 - CAST(ISNULL(app.applicationActive, 1) AS TINYINT)
+	@foundError = 1 - CAST(ISNULL(app.applicationActive, 1) AS TINYINT)
 
 	FROM dbo.Events e
 	JOIN dbo.Actions a ON
@@ -37,12 +42,54 @@ BEGIN
 	
 	WHERE e.eventID = @eventID
 
-	IF @cancelEvent = 1 SET @cancelEventReason = 'Application inactive'
+	IF @foundError = 1
+	BEGIN
+		SET @eventStatusID = 0
+		SET @eventNote = 'Application inactive'
+	END
 END
 
-IF @cancelEvent = 1
+----is action active?
+IF @foundError = 0
 BEGIN
-	EXEC updateEventStatus @eventID = @eventID, @eventStatus = 0, @eventError = @cancelEventReason
+	SELECT
+	@foundError = 1 - CAST(a.actionActive AS TINYINT)
+
+	FROM dbo.Events e
+	JOIN dbo.Actions a ON
+		e.actionID = a.actionID
+
+	WHERE e.eventID = @eventID
+
+	IF @foundError = 1
+	BEGIN
+		SET @eventStatusID = 0
+		SET @eventNote = 'Action inactive'
+	END
+END
+
+----does an action requiring parameters have parameters?
+IF @foundError = 0
+BEGIN
+	SELECT
+	@foundError = (CASE WHEN a.actionRequireParameters = 1 AND NULLIF(e.eventParameters, '') IS NULL THEN 1 ELSE 0 END)
+
+	FROM dbo.Events e
+	JOIN dbo.Actions a ON
+		e.actionID = a.actionID
+
+	WHERE e.eventID = @eventID
+
+	IF @foundError = 1
+	BEGIN
+		SET @eventStatusID = -1
+		SET @eventNote = 'Action missing parameters'
+	END
+END
+
+IF @foundError = 1
+BEGIN
+	EXEC updateEventStatus @eventID = @eventID, @eventStatus = @eventStatusID, @eventNote = @eventNote
 	SELECT 0
 END
 ELSE
