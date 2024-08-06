@@ -15,11 +15,14 @@ END
 IF @errmsg IS NULL
 	BEGIN
 	--if @eventStatus is a key value from dbo.EventStatuses, use that
-	IF EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = @eventStatus)
+	IF ISNUMERIC(@eventStatus) = 1
 	BEGIN
-		UPDATE dbo.Events
-		SET eventStatusID = @eventStatus, eventNote = @eventNote
-		WHERE eventID = @eventID
+		IF EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = @eventStatus)
+		BEGIN
+			UPDATE dbo.Events
+			SET eventStatusID = @eventStatus, eventNote = @eventNote
+			WHERE eventID = @eventID
+		END
 	END
 
 	ELSE

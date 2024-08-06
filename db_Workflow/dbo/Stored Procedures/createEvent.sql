@@ -29,19 +29,22 @@ END
 
 IF @errmsg IS NULL
 BEGIN
-	IF EXISTS (SELECT actionID FROM dbo.Actions WHERE actionID = @actionName)
+	IF ISNUMERIC(@actionName) = 1
 	BEGIN
-		IF @eventStartDate IS NULL
+		IF EXISTS (SELECT actionID FROM dbo.Actions WHERE actionID = @actionName)
 		BEGIN
-			INSERT INTO dbo.Events (actionID, eventParameters)
-			SELECT @actionName, @eventParameters
-		END
+			IF @eventStartDate IS NULL
+			BEGIN
+				INSERT INTO dbo.Events (actionID, eventParameters)
+				SELECT @actionName, @eventParameters
+			END
 
-		ELSE
+			ELSE
 
-		BEGIN
-			INSERT INTO dbo.Events (actionID, eventParameters, eventStartDate)
-			SELECT @actionName, @eventParameters, @eventStartDate
+			BEGIN
+				INSERT INTO dbo.Events (actionID, eventParameters, eventStartDate)
+				SELECT @actionName, @eventParameters, @eventStartDate
+			END
 		END
 	END
 

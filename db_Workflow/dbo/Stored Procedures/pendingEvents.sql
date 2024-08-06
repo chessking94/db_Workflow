@@ -20,4 +20,4 @@ LEFT JOIN dbo.Applications app ON
 
 WHERE es.inProgress = 0
 AND es.isTerminal = 0
-AND e.eventStartDate >= GETDATE()
+AND e.eventStartDate <= GETDATE()

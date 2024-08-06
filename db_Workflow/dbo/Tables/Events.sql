@@ -88,7 +88,7 @@ BEGIN
 	
 	WHERE eventID IN (
 		SELECT
-		e.EventID
+		e.eventID
 
 		FROM inserted i
 		JOIN dbo.WorkflowActions wa ON
