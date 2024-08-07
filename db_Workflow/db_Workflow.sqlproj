@@ -79,6 +79,7 @@
     <Build Include="dbo\Tables\stage_WorkflowActions.sql" />
     <Build Include="dbo\Stored Procedures\createWorkflowActions.sql" />
     <Build Include="dbo\Views\vwActiveEvents.sql" />
+    <Build Include="dbo\Views\vwApplications.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
