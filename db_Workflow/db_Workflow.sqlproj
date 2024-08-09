@@ -66,10 +66,6 @@
     <Build Include="dbo\Tables\Events.sql" />
     <Build Include="dbo\Tables\EventStatuses.sql" />
     <Build Include="dbo\Tables\Applications.sql" />
-    <Build Include="dbo\Stored Procedures\enableApplication.sql" />
-    <Build Include="dbo\Stored Procedures\disableApplication.sql" />
-    <Build Include="dbo\Stored Procedures\disableAction.sql" />
-    <Build Include="dbo\Stored Procedures\enableAction.sql" />
     <Build Include="dbo\Stored Procedures\createEvent.sql" />
     <Build Include="dbo\Stored Procedures\updateEventStatus.sql" />
     <Build Include="dbo\Stored Procedures\canStartEvent.sql" />
@@ -80,6 +76,7 @@
     <Build Include="dbo\Stored Procedures\createWorkflowActions.sql" />
     <Build Include="dbo\Views\vwActiveEvents.sql" />
     <Build Include="dbo\Views\vwApplications.sql" />
+    <Build Include="dbo\Stored Procedures\updateApplication.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
