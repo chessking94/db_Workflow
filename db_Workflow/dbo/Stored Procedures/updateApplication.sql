@@ -4,14 +4,17 @@
 	@applicationDescription VARCHAR(100),
 	@applicationFilename VARCHAR(250),
 	@applicationActive BIT,
-	@applicationDefaultParameter VARCHAR(250)
+	@applicationDefaultParameter VARCHAR(250) = NULL
 )
 
 AS
 
 BEGIN
-	--convert any fields that allow null values to nulls if they are whitespace-only strings
-	SET @applicationDefaultParameter = NULLIF(TRIM(@applicationDefaultParameter), '')
+	--convert empty strings to nulls
+	SET @applicationName = NULLIF(@applicationName, '')
+	SET @applicationDescription = NULLIF(@applicationDescription, '')
+	SET @applicationFilename = NULLIF(@applicationFilename, '')
+	SET @applicationDefaultParameter = NULLIF(@applicationDefaultParameter, '')
 
 	--get old values
 	DECLARE @oldName VARCHAR(20)
