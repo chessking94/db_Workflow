@@ -78,6 +78,9 @@
     <Build Include="dbo\Views\vwApplications.sql" />
     <Build Include="dbo\Stored Procedures\updateApplication.sql" />
     <Build Include="dbo\Stored Procedures\createApplication.sql" />
+    <Build Include="dbo\Views\vwActions.sql" />
+    <Build Include="dbo\Stored Procedures\createAction.sql" />
+    <Build Include="dbo\Stored Procedures\updateAction.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
