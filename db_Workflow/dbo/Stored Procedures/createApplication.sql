@@ -22,5 +22,7 @@ BEGIN
 
 	INSERT INTO dbo.Applications (applicationName, applicationDescription, applicationFilename, applicationActive, applicationDefaultParameter)
 	VALUES (@applicationName, @applicationDescription, @applicationFilename, @applicationActive, @applicationDefaultParameter)
+
+	RETURN @@IDENTITY
 END
 
