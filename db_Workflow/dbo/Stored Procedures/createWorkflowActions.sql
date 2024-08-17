@@ -1,11 +1,14 @@
 ﻿CREATE PROCEDURE [dbo].[createWorkflowActions] (
-	@workflowID SMALLINT
+	@workflowName VARCHAR(20)
 )
 
 AS
 
 --the idea is that creation of or updates to a workflow are defined in a staging table, then migrated to the live table
 --assume validation has already occurred and the records in stage_WorkflowEvents are good
+
+DECLARE @workflowID SMALLINT
+SELECT @workflowID = workflowID FROM dbo.Workflows WHERE workflowName = @workflowName
 
 --do not allow this to continue if there are non-terminal events for a workflow.
 DECLARE @activeEvents INT
@@ -47,3 +50,5 @@ continueAfterError
 FROM dbo.stage_WorkflowActions
 
 WHERE workflowID = @workflowID
+
+RETURN 0
