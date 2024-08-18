@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[createAction] (
-	@actionName VARCHAR(20),
+	@actionName VARCHAR(50),
 	@actionDescription VARCHAR(100),
 	@actionActive BIT,
 	@actionRequireParameters BIT,

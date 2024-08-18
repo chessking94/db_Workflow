@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[updateWorkflow] (
 	@workflowID SMALLINT,
-	@workflowName VARCHAR(20),
+	@workflowName VARCHAR(50),
 	@workflowDescription VARCHAR(100),
 	@workflowActive BIT
 )
@@ -13,7 +13,7 @@ BEGIN
 	SET @workflowDescription = NULLIF(@workflowDescription, '')
 
 	--get old values
-	DECLARE @oldName VARCHAR(20)
+	DECLARE @oldName VARCHAR(50)
 	DECLARE @oldDescription VARCHAR(100)
 	DECLARE @oldActive BIT
 

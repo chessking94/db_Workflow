@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[saveWorkflowAction] (
 	@stagingKey INT,
 	@stepNumber TINYINT,
-	@actionName VARCHAR(20),
+	@actionName VARCHAR(50),
 	@eventParameters VARCHAR(250),
 	@continueAfterError BIT
 )

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[stageWorkflowActions] (
-	@workflowName VARCHAR(20)
+	@workflowName VARCHAR(50)
 )
 
 AS

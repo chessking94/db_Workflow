@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[createWorkflow] (
-	@workflowName VARCHAR(20),
+	@workflowName VARCHAR(50),
 	@workflowDescription VARCHAR(100),
 	@workflowActive BIT
 )

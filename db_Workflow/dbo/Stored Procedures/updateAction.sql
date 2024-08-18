@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[updateAction] (
 	@actionID INT,
-	@actionName VARCHAR(20),
+	@actionName VARCHAR(50),
 	@actionDescription VARCHAR(100),
 	@actionActive BIT,
 	@actionRequireParameters BIT,
@@ -16,7 +16,7 @@ BEGIN
 	SET @actionDescription = NULLIF(@actionDescription, '')
 
 	--get old values
-	DECLARE @oldName VARCHAR(20)
+	DECLARE @oldName VARCHAR(50)
 	DECLARE @oldDescription VARCHAR(100)
 	DECLARE @oldActive BIT
 	DECLARE @oldRequireParameters BIT

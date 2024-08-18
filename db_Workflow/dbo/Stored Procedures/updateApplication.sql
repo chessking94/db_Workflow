@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[updateApplication] (
 	@applicationID INT,
-	@applicationName VARCHAR(20),
+	@applicationName VARCHAR(50),
 	@applicationDescription VARCHAR(100),
 	@applicationFilename VARCHAR(250),
 	@applicationActive BIT,
@@ -17,7 +17,7 @@ BEGIN
 	SET @applicationDefaultParameter = NULLIF(@applicationDefaultParameter, '')
 
 	--get old values
-	DECLARE @oldName VARCHAR(20)
+	DECLARE @oldName VARCHAR(50)
 	DECLARE @oldDescription VARCHAR(100)
 	DECLARE @oldFilename VARCHAR(250)
 	DECLARE @oldActive BIT

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[createApplication] (
-	@applicationName VARCHAR(20),
+	@applicationName VARCHAR(50),
 	@applicationDescription VARCHAR(100),
 	@applicationFilename VARCHAR(250),
 	@applicationActive BIT,

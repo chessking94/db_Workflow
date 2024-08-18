@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[createEvent] (
 	@workflowID SMALLINT = NULL,
 	@stepNumber TINYINT = NULL,
-	@actionName VARCHAR(20) = NULL,
+	@actionName VARCHAR(50) = NULL,
 	@eventParameters VARCHAR(250) = NULL,
 	@eventStartDate DATETIME = NULL
 )
