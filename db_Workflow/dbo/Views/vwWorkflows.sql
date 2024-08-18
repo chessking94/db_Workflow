@@ -6,6 +6,7 @@ SELECT
 workflowID,
 workflowName,
 workflowDescription,
-workflowActive
+workflowActive,
+workflowCreateDate
 
 FROM dbo.Workflows

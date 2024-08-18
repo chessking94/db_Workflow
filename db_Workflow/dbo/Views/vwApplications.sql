@@ -8,6 +8,7 @@ applicationName,
 applicationDescription,
 applicationFilename,
 applicationDefaultParameter,
-applicationActive
+applicationActive,
+applicationCreateDate
 
 FROM dbo.Applications

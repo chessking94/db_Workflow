@@ -4,6 +4,7 @@
 	[actionName] VARCHAR(50) NOT NULL,
 	[actionDescription] VARCHAR(100) NOT NULL,
 	[actionActive] BIT CONSTRAINT [DF_Actions_Active] DEFAULT ((0)) NOT NULL,
+	[actionCreateDate] DATETIME CONSTRAINT [DF_Actions_CreateDate] DEFAULT (GETDATE()) NOT NULL,
 	[actionRequireParameters] BIT CONSTRAINT [DF_Actions_Parameters] DEFAULT ((0)) NOT NULL,
 	[actionConcurrency] TINYINT CONSTRAINT [DF_Actions_Concurrency] DEFAULT ((1)) NOT NULL,
 	[applicationID] INT NULL,

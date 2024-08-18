@@ -7,6 +7,7 @@ actionID,
 actionName,
 actionDescription,
 actionActive,
+actionCreateDate,
 actionRequireParameters,
 actionConcurrency,
 applicationID
