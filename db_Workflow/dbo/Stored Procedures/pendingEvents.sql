@@ -8,7 +8,8 @@ e.eventID,
 a.actionID,
 app.applicationFilename,
 app.applicationDefaultParameter,
-e.eventParameters
+e.eventParameters,
+a.actionLogOutput
 
 FROM dbo.Events e
 JOIN dbo.EventStatuses es ON
