@@ -4,6 +4,7 @@
 	@actionActive BIT,
 	@actionRequireParameters BIT,
 	@actionConcurrency TINYINT,
+	@actionLogOutput BIT,
 	@applicationID INT = NULL
 )
 
@@ -22,8 +23,8 @@ BEGIN
 		IF (SELECT applicationID FROM dbo.Applications WHERE applicationID = @applicationID) IS NULL RETURN -3  --application does not exist
 	END
 
-	INSERT INTO dbo.Actions (actionName, actionDescription, actionActive, actionRequireParameters, actionConcurrency, applicationID)
-	VALUES (@actionName, @actionDescription, @actionActive, @actionRequireParameters, @actionConcurrency, @applicationID)
+	INSERT INTO dbo.Actions (actionName, actionDescription, actionActive, actionRequireParameters, actionConcurrency, actionLogOutput, applicationID)
+	VALUES (@actionName, @actionDescription, @actionActive, @actionRequireParameters, @actionConcurrency, @actionLogOutput, @applicationID)
 
 	RETURN @@IDENTITY
 END

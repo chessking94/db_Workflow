@@ -5,6 +5,7 @@
 	@actionActive BIT,
 	@actionRequireParameters BIT,
 	@actionConcurrency TINYINT,
+	@actionLogOutput BIT,
 	@applicationID INT = NULL
 )
 
@@ -21,6 +22,7 @@ BEGIN
 	DECLARE @oldActive BIT
 	DECLARE @oldRequireParameters BIT
 	DECLARE @oldConcurrency TINYINT
+	DECLARE @oldLogOutput BIT
 	DECLARE @oldApplicationID INT
 
 	SELECT
@@ -29,6 +31,7 @@ BEGIN
 	@oldActive = actionActive,
 	@oldRequireParameters = actionRequireParameters,
 	@oldConcurrency = actionConcurrency,
+	@oldLogOutput = actionLogOutput,
 	@oldApplicationID = applicationID
 
 	FROM dbo.Actions
@@ -65,6 +68,11 @@ BEGIN
 
 	IF @canUpdate = 0
 	BEGIN
+		IF @actionLogOutput <> @oldLogOutput SET @canUpdate = 1
+	END
+
+	IF @canUpdate = 0
+	BEGIN
 		IF ISNULL(@applicationID, -1) <> ISNULL(@oldApplicationID, -1) SET @canUpdate = 1
 	END
 
@@ -76,6 +84,7 @@ BEGIN
 			actionActive = @actionActive,
 			actionRequireParameters = @actionRequireParameters,
 			actionConcurrency = @actionConcurrency,
+			actionLogOutput = @actionLogOutput,
 			applicationID = @applicationID
 		WHERE actionID = @actionID
 

@@ -10,6 +10,7 @@ actionActive,
 actionCreateDate,
 actionRequireParameters,
 actionConcurrency,
+actionLogOutput,
 applicationID
 
 FROM dbo.Actions
