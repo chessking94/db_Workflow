@@ -8,6 +8,7 @@ app.applicationName,
 w.workflowName,
 wa.stepNumber,
 a.actionName,
+e.eventParameters,
 es.eventStatus,
 e.eventStatusDate,
 e.eventStartDate
