@@ -23,7 +23,8 @@ BEGIN
 	ELSE
 
 	BEGIN
-		SET @errmsg = 'Invalid workflow/step number combination!'
+		--invalid workflow/step number combination
+		RETURN -1
 	END
 END
 
@@ -71,12 +72,10 @@ BEGIN
 		ELSE
 
 		BEGIN
-			SET @errmsg = 'actionName parameter not a key or action name!'
+			--actionName parameter not a key or action name
+			RETURN -2
 		END
 	END
 END
 
-IF @errmsg IS NOT NULL
-BEGIN
-	RAISERROR(@errmsg, 16, 1)
-END
+RETURN @@IDENTITY
