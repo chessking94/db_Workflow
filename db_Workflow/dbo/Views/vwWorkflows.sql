@@ -7,6 +7,9 @@ workflowID,
 workflowName,
 workflowDescription,
 workflowActive,
-workflowCreateDate
+workflowCreateDate,
+s.scheduleName
 
-FROM dbo.Workflows
+FROM dbo.Workflows w
+LEFT JOIN dbo.Schedules s ON
+	w.scheduleID = s.scheduleID

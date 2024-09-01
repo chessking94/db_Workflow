@@ -18,23 +18,26 @@ BEGIN
 		EXEC dbo.cancelPendingWorkflowEvents @workflowID = @workflowID
 
 		--if no pending workflow steps, reschedule workflows for that schedule
-		DECLARE @pendingEvents INT = 0
-		SELECT
-		@pendingEvents = COUNT(e.eventID)
-
-		FROM dbo.Events e
-		JOIN dbo.EventStatuses es ON
-			e.eventStatusID = es.eventStatusID
-
-		WHERE e.workflowID = @workflowID
-		AND es.isTerminal = 0
-
-		IF @pendingEvents = 0
+		IF (SELECT scheduleActive FROM dbo.Schedules WHERE scheduleID = @scheduleID) = 1
 		BEGIN
-			DECLARE @workflowName VARCHAR(50) = (SELECT workflowName FROM dbo.Workflows WHERE workflowID = @workflowID)
-			DECLARE @nextRunTime DATETIME = dbo.scheduleNextRunTime(@scheduleID)
+			DECLARE @pendingEvents INT = 0
+			SELECT
+			@pendingEvents = COUNT(e.eventID)
 
-			EXEC dbo.createEvent @workflowName = @workflowName, @eventStartDate = @nextRunTime
+			FROM dbo.Events e
+			JOIN dbo.EventStatuses es ON
+				e.eventStatusID = es.eventStatusID
+
+			WHERE e.workflowID = @workflowID
+			AND es.isTerminal = 0
+
+			IF @pendingEvents = 0
+			BEGIN
+				DECLARE @workflowName VARCHAR(50) = (SELECT workflowName FROM dbo.Workflows WHERE workflowID = @workflowID)
+				DECLARE @nextRunTime DATETIME = dbo.scheduleNextRunTime(@scheduleID)
+
+				EXEC dbo.createEvent @workflowName = @workflowName, @eventStartDate = @nextRunTime
+			END
 		END
 
 		--prep for next iteration

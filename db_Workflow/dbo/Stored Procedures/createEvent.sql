@@ -21,8 +21,9 @@ BEGIN
 	SELECT @workflowID = workflowID FROM dbo.Workflows WHERE workflowName = @workflowName
 	IF @workflowID IS NOT NULL
 	BEGIN
-		IF (SELECT COUNT(stepNumber) FROM dbo.WorkflowActions WHERE workflowID = @workflowID) = 0 RETURN -2  --no actions set up for this workflow
-		IF (SELECT COUNT(e.eventID) FROM dbo.Events e JOIN dbo.EventStatuses es ON e.eventStatusID = es.eventStatusID WHERE workflowID = @workflowID AND es.isTerminal <> 1) > 0 RETURN -3  --active events for this workflow
+		IF (SELECT workflowActive FROM dbo.Workflows WHERE workflowID = @workflowID) = 0 RETURN -2  --workflow is inactive
+		IF (SELECT COUNT(stepNumber) FROM dbo.WorkflowActions WHERE workflowID = @workflowID) = 0 RETURN -3  --no actions set up for this workflow
+		IF (SELECT COUNT(e.eventID) FROM dbo.Events e JOIN dbo.EventStatuses es ON e.eventStatusID = es.eventStatusID WHERE workflowID = @workflowID AND es.isTerminal <> 1) > 0 RETURN -4  --active events for this workflow
 
 		IF @eventStartDate IS NULL
 		BEGIN
@@ -44,7 +45,7 @@ BEGIN
 
 	BEGIN
 		--invalid workflow name
-		RETURN -4
+		RETURN -5
 	END
 END
 
@@ -54,6 +55,8 @@ BEGIN
 	SELECT @actionID = actionID FROM dbo.Actions WHERE actionName = @actionName
 	IF @actionID IS NOT NULL
 	BEGIN
+		IF (SELECT actionActive FROM dbo.Actions WHERE actionID = @actionID) = 0 RETURN -6  --action is inactive
+
 		IF @eventStartDate IS NULL
 		BEGIN
 			INSERT INTO dbo.Events (actionID, eventParameters)
@@ -74,6 +77,6 @@ BEGIN
 
 	BEGIN
 		--invalid action name
-		RETURN -5
+		RETURN -7
 	END
 END
