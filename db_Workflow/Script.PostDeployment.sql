@@ -133,3 +133,36 @@ WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusI
 INSERT INTO dbo.EventStatuses (eventStatusID, eventStatus, inProgress, isTerminal)
 SELECT '3', 'Processing', '1', '0'
 WHERE NOT EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = '3')
+
+----Table: Recurrences
+SET IDENTITY_INSERT dbo.Recurrences ON
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '0', 'One-Time'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '0')
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '1', 'Minutely'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '1')
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '2', 'Hourly'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '2')
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '3', 'Daily'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '3')
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '4', 'Weekly'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '4')
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '5', 'Monthly'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '5')
+
+INSERT INTO dbo.Recurrences (recurrenceID, recurrenceName)
+SELECT '6', 'Yearly'
+WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '6')
+
+SET IDENTITY_INSERT dbo.Recurrences OFF

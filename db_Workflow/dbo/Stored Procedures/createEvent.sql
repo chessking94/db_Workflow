@@ -22,6 +22,7 @@ BEGIN
 	IF @workflowID IS NOT NULL
 	BEGIN
 		IF (SELECT COUNT(stepNumber) FROM dbo.WorkflowActions WHERE workflowID = @workflowID) = 0 RETURN -2  --no actions set up for this workflow
+		IF (SELECT COUNT(e.eventID) FROM dbo.Events e JOIN dbo.EventStatuses es ON e.eventStatusID = es.eventStatusID WHERE workflowID = @workflowID AND es.isTerminal <> 1) > 0 RETURN -3  --active events for this workflow
 
 		IF @eventStartDate IS NULL
 		BEGIN
@@ -43,7 +44,7 @@ BEGIN
 
 	BEGIN
 		--invalid workflow name
-		RETURN -3
+		RETURN -4
 	END
 END
 
@@ -73,6 +74,6 @@ BEGIN
 
 	BEGIN
 		--invalid action name
-		RETURN -4
+		RETURN -5
 	END
 END

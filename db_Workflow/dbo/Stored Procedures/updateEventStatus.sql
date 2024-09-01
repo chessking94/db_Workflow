@@ -6,45 +6,47 @@
 
 AS
 
-DECLARE @errmsg NVARCHAR(128)
-IF NOT EXISTS (SELECT eventID FROM dbo.Events WHERE eventID = @eventID)
 BEGIN
-	SET @errmsg = 'eventID passed not found!'
-END
-
-IF @errmsg IS NULL
+	DECLARE @errmsg NVARCHAR(128)
+	IF NOT EXISTS (SELECT eventID FROM dbo.Events WHERE eventID = @eventID)
 	BEGIN
-	--if @eventStatus is a key value from dbo.EventStatuses, use that
-	IF ISNUMERIC(@eventStatus) = 1
-	BEGIN
-		IF EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = @eventStatus)
-		BEGIN
-			UPDATE dbo.Events
-			SET eventStatusID = @eventStatus, eventNote = @eventNote
-			WHERE eventID = @eventID
-		END
+		SET @errmsg = 'eventID passed not found!'
 	END
 
-	ELSE
-
-	BEGIN
-		DECLARE @eventStatusID SMALLINT = (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatus = @eventStatus)
-		IF @eventStatusID IS NOT NULL
+	IF @errmsg IS NULL
 		BEGIN
-			UPDATE dbo.Events
-			SET eventStatusID = @eventStatusID, eventNote = @eventNote
-			WHERE eventID = @eventID
+		--if @eventStatus is a key value from dbo.EventStatuses, use that
+		IF ISNUMERIC(@eventStatus) = 1
+		BEGIN
+			IF EXISTS (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatusID = @eventStatus)
+			BEGIN
+				UPDATE dbo.Events
+				SET eventStatusID = @eventStatus, eventNote = @eventNote
+				WHERE eventID = @eventID
+			END
 		END
 
 		ELSE
 
 		BEGIN
-			SET @errmsg = 'eventStatus parameter not a key or status name!'
+			DECLARE @eventStatusID SMALLINT = (SELECT eventStatusID FROM dbo.EventStatuses WHERE eventStatus = @eventStatus)
+			IF @eventStatusID IS NOT NULL
+			BEGIN
+				UPDATE dbo.Events
+				SET eventStatusID = @eventStatusID, eventNote = @eventNote
+				WHERE eventID = @eventID
+			END
+
+			ELSE
+
+			BEGIN
+				SET @errmsg = 'eventStatus parameter not a key or status name!'
+			END
 		END
 	END
-END
 
-IF @errmsg IS NOT NULL
-BEGIN
-	RAISERROR(@errmsg, 16, 1)
+	IF @errmsg IS NOT NULL
+	BEGIN
+		RAISERROR(@errmsg, 16, 1)
+	END
 END
