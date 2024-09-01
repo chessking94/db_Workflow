@@ -6,7 +6,7 @@
 	@actionRequireParameters BIT,
 	@actionConcurrency TINYINT,
 	@actionLogOutput BIT,
-	@applicationID INT = NULL
+	@applicationName VARCHAR(50) = NULL
 )
 
 AS
@@ -15,6 +15,7 @@ BEGIN
 	--convert empty strings to nulls
 	SET @actionName = NULLIF(@actionName, '')
 	SET @actionDescription = NULLIF(@actionDescription, '')
+	SET @applicationName = NULLIF(@applicationName, '')
 
 	--get old values
 	DECLARE @oldName VARCHAR(50)
@@ -23,20 +24,22 @@ BEGIN
 	DECLARE @oldRequireParameters BIT
 	DECLARE @oldConcurrency TINYINT
 	DECLARE @oldLogOutput BIT
-	DECLARE @oldApplicationID INT
+	DECLARE @oldApplicationName VARCHAR(50)
 
 	SELECT
-	@oldName = actionName,
-	@oldDescription = actionDescription,
-	@oldActive = actionActive,
-	@oldRequireParameters = actionRequireParameters,
-	@oldConcurrency = actionConcurrency,
-	@oldLogOutput = actionLogOutput,
-	@oldApplicationID = applicationID
+	@oldName = act.actionName,
+	@oldDescription = act.actionDescription,
+	@oldActive = act.actionActive,
+	@oldRequireParameters = act.actionRequireParameters,
+	@oldConcurrency = act.actionConcurrency,
+	@oldLogOutput = act.actionLogOutput,
+	@oldApplicationName = app.applicationName
 
-	FROM dbo.Actions
+	FROM dbo.Actions act
+	LEFT JOIN dbo.Applications app ON
+		act.applicationID = app.applicationID
 
-	WHERE actionID = @actionID
+	WHERE act.actionID = @actionID
 
 	--confirm there was an update
 	DECLARE @canUpdate BIT = 0
@@ -73,7 +76,7 @@ BEGIN
 
 	IF @canUpdate = 0
 	BEGIN
-		IF ISNULL(@applicationID, -1) <> ISNULL(@oldApplicationID, -1) SET @canUpdate = 1
+		IF ISNULL(@applicationName, '') <> ISNULL(@oldApplicationName, '') SET @canUpdate = 1
 	END
 
 	IF @canUpdate = 1
@@ -85,7 +88,7 @@ BEGIN
 			actionRequireParameters = @actionRequireParameters,
 			actionConcurrency = @actionConcurrency,
 			actionLogOutput = @actionLogOutput,
-			applicationID = @applicationID
+			applicationID = (SELECT applicationID FROM dbo.Applications WHERE applicationName = @applicationName)
 		WHERE actionID = @actionID
 
 		RETURN 0
