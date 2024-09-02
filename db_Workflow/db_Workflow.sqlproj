@@ -95,6 +95,8 @@
     <Build Include="dbo\Functions\scheduleNextRunTime.sql" />
     <Build Include="dbo\Stored Procedures\cancelPendingWorkflowEvents.sql" />
     <Build Include="dbo\Views\vwSchedules.sql" />
+    <Build Include="dbo\Stored Procedures\createSchedule.sql" />
+    <Build Include="dbo\Stored Procedures\updateSchedule.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
