@@ -8,7 +8,7 @@ BEGIN
 	DECLARE @impactedWorkflows TABLE (workflowID SMALLINT)
 
 	INSERT INTO @impactedWorkflows
-	SELECT workflowID FROM workflows WHERE scheduleID = @scheduleID
+	SELECT workflowID FROM dbo.Workflows WHERE scheduleID = @scheduleID
 
 	DECLARE @workflowID SMALLINT
 	SET @workflowID = (SELECT TOP 1 workflowID FROM @impactedWorkflows)
