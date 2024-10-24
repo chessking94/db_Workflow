@@ -99,7 +99,7 @@ BEGIN
 		----is the event in a startable status?
 		DECLARE @canStart BIT = 1
 		IF @canStart = 1
-			BEGIN
+		BEGIN
 			SELECT
 			@canStart = (CASE WHEN (es.inProgress = 1 OR es.isTerminal = 1) THEN 0 ELSE 1 END)
 
@@ -111,10 +111,11 @@ BEGIN
 		END
 
 		----if the event is for a workflow, ensure prerequisite step is complete
-		IF (@canStart = 1 AND (SELECT workflowID FROM dbo.Events WHERE eventID = @eventID) IS NOT NULL)
+		DECLARE @workflowID SMALLINT = (SELECT workflowID FROM dbo.Events WHERE eventID = @eventID)
+		IF (@canStart = 1 AND @workflowID IS NOT NULL)
 		BEGIN
 			SELECT
-			@canStart = (
+			@canStart = SUM(
 				CASE
 					WHEN es.inProgress = 1 THEN 0
 					WHEN es.eventStatusID = 2 THEN 0
@@ -130,11 +131,14 @@ BEGIN
 				e.workflowID = wa.workflowID
 				AND e.stepNumber = wa.stepNumber
 
-			WHERE e.stepNumber = (SELECT stepNumber FROM dbo.Events WHERE eventID = @eventID) - 1
+			WHERE e.workflowID = @workflowID
+			AND e.stepNumber = (SELECT stepNumber FROM dbo.Events WHERE eventID = @eventID) - 1
+
+			IF @canStart IS NULL SET @canStart = 1  --this should only hit if the step being checked is step 1 (meaning step - 1 = 0, so no records in above query)
 		END
 
 		----are too many instances of the action already running?
-		IF @canStart = 1
+		IF @canStart >= 1
 		BEGIN
 			SELECT
 			CASE
