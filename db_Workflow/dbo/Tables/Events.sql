@@ -105,4 +105,62 @@ BEGIN
 		AND es.isTerminal = 0  --remaining workflow steps have not completed yet
 		AND e.eventID NOT IN (SELECT eventID FROM inserted)  --safeguard to exclude the original record being updated
 	)
+
+	--reschedule workflow if it it complete; even though it is unlikely, need to use a cursor to iterate over the affected rows
+	DECLARE @eventID INT
+	DECLARE eventCursor CURSOR LOCAL FAST_FORWARD FOR
+		SELECT i.eventID FROM inserted i
+	FOR READ ONLY
+
+	OPEN eventCursor
+	FETCH NEXT FROM eventCursor INTO @eventID
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		DECLARE @rescheduleWorkflow BIT = 0
+		DECLARE @workflowID SMALLINT
+		DECLARE @scheduleID INT
+
+		SELECT
+		@rescheduleWorkflow = (CASE WHEN w.workflowActive = 1 AND s.scheduleActive = 1 THEN 1 ELSE 0 END),
+		@workflowID = w.workflowID,
+		@scheduleID = s.scheduleID
+
+		FROM inserted i
+		LEFT JOIN dbo.Workflows w ON
+			i.workflowID = w.workflowID
+		LEFT JOIN dbo.Schedules s ON
+			w.scheduleID = s.scheduleID
+
+		WHERE i.eventID = @eventID
+
+		IF @rescheduleWorkflow = 1
+		BEGIN
+			DECLARE @pendingEvents INT = 0
+			SELECT
+			@pendingEvents = COUNT(e.eventID)
+
+			FROM inserted i
+			JOIN dbo.Events e ON
+				i.eventID = e.eventID
+			JOIN dbo.EventStatuses es ON
+				e.eventStatusID = es.eventStatusID
+
+			WHERE e.workflowID = @workflowID
+			AND es.isTerminal = 0
+
+			IF @pendingEvents = 0
+			BEGIN
+				DECLARE @workflowName VARCHAR(50) = (SELECT workflowName FROM dbo.Workflows WHERE workflowID = @workflowID)
+				DECLARE @nextRunTime DATETIME = dbo.scheduleNextRunTime(@scheduleID)
+
+				EXEC dbo.createEvent @workflowName = @workflowName, @eventStartDate = @nextRunTime
+			END
+		END
+
+		FETCH NEXT FROM eventCursor INTO @eventID
+	END
+
+	CLOSE eventCursor
+	DEALLOCATE eventCursor
 END;
