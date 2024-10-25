@@ -114,8 +114,8 @@ BEGIN
 		DECLARE @workflowID SMALLINT = (SELECT workflowID FROM dbo.Events WHERE eventID = @eventID)
 		IF (@canStart = 1 AND @workflowID IS NOT NULL)
 		BEGIN
-			SELECT
-			@canStart = SUM(
+			SELECT TOP(1)
+			@canStart = (
 				CASE
 					WHEN es.inProgress = 1 THEN 0
 					WHEN es.eventStatusID = 2 THEN 0
@@ -133,6 +133,8 @@ BEGIN
 
 			WHERE e.workflowID = @workflowID
 			AND e.stepNumber = (SELECT stepNumber FROM dbo.Events WHERE eventID = @eventID) - 1
+
+			ORDER BY e.eventID DESC
 
 			IF @canStart IS NULL SET @canStart = 1  --this should only hit if the step being checked is step 1 (meaning step - 1 = 0, so no records in above query)
 		END
