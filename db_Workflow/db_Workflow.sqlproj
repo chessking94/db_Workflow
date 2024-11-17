@@ -61,6 +61,10 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Views" />
     <Folder Include="dbo\Functions" />
+    <Folder Include="Security" />
+    <Folder Include="temp" />
+    <Folder Include="temp\Tables" />
+    <Folder Include="temp\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Actions.sql" />
@@ -97,6 +101,11 @@
     <Build Include="dbo\Views\vwSchedules.sql" />
     <Build Include="dbo\Stored Procedures\createSchedule.sql" />
     <Build Include="dbo\Stored Procedures\updateSchedule.sql" />
+    <Build Include="Security\temp.sql" />
+    <Build Include="temp\Tables\ErrorReviewCompleted.sql" />
+    <Build Include="temp\Stored Procedures\insertErrorReview.sql" />
+    <Build Include="temp\Stored Procedures\updateErrorReview.sql" />
+    <Build Include="temp\Tables\ErrorReviewPending.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
