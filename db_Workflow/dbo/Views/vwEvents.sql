@@ -1,4 +1,4 @@
-﻿CREATE VIEW [dbo].[vwActiveEvents]
+﻿CREATE VIEW [dbo].[vwEvents]
 
 AS
 
@@ -11,7 +11,11 @@ a.actionName,
 e.eventParameters,
 es.eventStatus,
 e.eventStatusDate,
-e.eventStartDate
+e.eventStartDate,
+e.eventEndDate,
+e.eventNote,
+es.isTerminal,
+es.inProgress
 
 FROM dbo.Events e
 JOIN dbo.EventStatuses es ON
@@ -25,5 +29,3 @@ LEFT JOIN dbo.WorkflowActions wa ON
 	AND e.stepNumber = wa.stepNumber
 LEFT JOIN dbo.Workflows w ON
 	wa.workflowID = w.workflowID
-
-WHERE es.isTerminal = 0

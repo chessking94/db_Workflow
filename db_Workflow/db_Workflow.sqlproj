@@ -79,7 +79,6 @@
     <Build Include="dbo\Tables\WorkflowActions.sql" />
     <Build Include="dbo\Tables\stage_WorkflowActions.sql" />
     <Build Include="dbo\Stored Procedures\createWorkflowActions.sql" />
-    <Build Include="dbo\Views\vwActiveEvents.sql" />
     <Build Include="dbo\Views\vwApplications.sql" />
     <Build Include="dbo\Stored Procedures\updateApplication.sql" />
     <Build Include="dbo\Stored Procedures\createApplication.sql" />
@@ -107,6 +106,7 @@
     <Build Include="temp\Stored Procedures\updateErrorReview.sql" />
     <Build Include="temp\Tables\ErrorReviewPending.sql" />
     <Build Include="temp\Stored Procedures\ClearTempTables.sql" />
+    <Build Include="dbo\Views\vwEvents.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
