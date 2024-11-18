@@ -166,3 +166,24 @@ SELECT '6', 'Yearly'
 WHERE NOT EXISTS (SELECT recurrenceID FROM dbo.Recurrences WHERE recurrenceID = '6')
 
 SET IDENTITY_INSERT dbo.Recurrences OFF
+
+----Table: ApplicationTypes
+SET IDENTITY_INSERT dbo.ApplicationTypes ON
+
+INSERT INTO dbo.ApplicationTypes (applicationTypeID, applicationType)
+SELECT '1', 'Python Script'
+WHERE NOT EXISTS (SELECT applicationTypeID FROM dbo.ApplicationTypes WHERE applicationTypeID = '1')
+
+INSERT INTO dbo.ApplicationTypes (applicationTypeID, applicationType)
+SELECT '2', 'Batch Script'
+WHERE NOT EXISTS (SELECT applicationTypeID FROM dbo.ApplicationTypes WHERE applicationTypeID = '2')
+
+INSERT INTO dbo.ApplicationTypes (applicationTypeID, applicationType)
+SELECT '3', 'Executable'
+WHERE NOT EXISTS (SELECT applicationTypeID FROM dbo.ApplicationTypes WHERE applicationTypeID = '3')
+
+INSERT INTO dbo.ApplicationTypes (applicationTypeID, applicationType)
+SELECT '4', 'Stored Procedure'
+WHERE NOT EXISTS (SELECT applicationTypeID FROM dbo.ApplicationTypes WHERE applicationTypeID = '4')
+
+SET IDENTITY_INSERT dbo.ApplicationTypes OFF

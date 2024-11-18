@@ -107,6 +107,7 @@
     <Build Include="temp\Tables\ErrorReviewPending.sql" />
     <Build Include="temp\Stored Procedures\ClearTempTables.sql" />
     <Build Include="dbo\Views\vwEvents.sql" />
+    <Build Include="dbo\Tables\ApplicationTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
