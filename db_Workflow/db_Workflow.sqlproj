@@ -106,6 +106,7 @@
     <Build Include="temp\Stored Procedures\insertErrorReview.sql" />
     <Build Include="temp\Stored Procedures\updateErrorReview.sql" />
     <Build Include="temp\Tables\ErrorReviewPending.sql" />
+    <Build Include="temp\Stored Procedures\ClearTempTables.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
