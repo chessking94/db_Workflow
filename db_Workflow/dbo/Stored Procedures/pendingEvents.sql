@@ -9,7 +9,8 @@ BEGIN
 	app.applicationFilename,
 	app.applicationDefaultParameter,
 	e.eventParameters,
-	a.actionLogOutput
+	a.actionLogOutput,
+	t.applicationType
 
 	FROM dbo.Events e
 	JOIN dbo.EventStatuses es ON
@@ -18,6 +19,8 @@ BEGIN
 		e.actionID = a.actionID
 	LEFT JOIN dbo.Applications app ON
 		a.applicationID = app.applicationID
+	LEFT JOIN dbo.ApplicationTypes t ON
+		app.applicationTypeID = t.applicationTypeID
 
 	WHERE es.inProgress = 0
 	AND es.isTerminal = 0
