@@ -13,103 +13,49 @@ Post-Deployment Script Template
 USE Workflow
 GO
 
-/* Perform the necessary user/role checks for the environment login */
-DECLARE @server varchar(15) = @@SERVERNAME
-DECLARE @login_name varchar(25)
-DECLARE @xsql nvarchar(500)
-DECLARE @login_ct tinyint
-DECLARE @user_ct tinyint
-DECLARE @role_ct tinyint
-DECLARE @exec_perm tinyint
-
---get username for environment and verify it exists on the server
-IF @server LIKE '%dev%'
+--set the owner
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = 'database_owner' AND type_desc = 'SQL_LOGIN')
 BEGIN
-	SET @login_name = 'automation_user'
-END
-ELSE
-BEGIN
-	SET @login_name = 'automation_user'
-END
-
-SET @xsql = 'SELECT @loginctOUT = COUNT(name) FROM sys.server_principals WHERE name = ''' + @login_name + ''' AND type_desc = ''SQL_LOGIN'''
-EXEC sp_executesql @xsql, N'@loginctOUT tinyint OUTPUT', @loginctOUT=@login_ct OUTPUT
-IF @login_ct = 0
-BEGIN
-	RAISERROR('The user does not exist', 16, 1)
+	RAISERROR('The user "database_owner" does not exist', 16, 1)
 	RETURN
 END
 
---create user on database if it does not already exist
-SET @xsql = 'SELECT @userctOUT = COUNT(name) FROM sys.database_principals WHERE name = ''' + @login_name + ''''
-EXEC sp_executesql @xsql, N'@userctOUT tinyint OUTPUT', @userctOUT=@user_ct OUTPUT
-IF @user_ct = 0
+EXEC sp_changedbowner 'database_owner'
+
+--set permissions for other logins
+----automation_user
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = 'automation_user' AND type_desc = 'SQL_LOGIN')
 BEGIN
-	SET @xsql = 'CREATE USER [' + @login_name + '] FOR LOGIN [' + @login_name + '] WITH DEFAULT_SCHEMA=[dbo]'
-	EXEC sp_executesql @xsql
-	PRINT 'User created on database'
+	RAISERROR('The user "automation_user" does not exist', 16, 1)
+	RETURN
 END
 
---the environment login should have db_datareader and db_datawriter roles on the database, check if assigned and assign if not
-SET @xsql = '
-SELECT
-@rolectOUT = COUNT(dp2.name)
-
-FROM sys.database_principals AS dp
-JOIN sys.database_role_members AS drm ON dp.principal_id = drm.member_principal_id
-JOIN sys.database_principals AS dp2 ON drm.role_principal_id = dp2.principal_id
-
-WHERE dp2.name = ''db_datawriter''
-AND dp.name = ''' + @login_name + ''''
-
-EXEC sp_executesql @xsql, N'@rolectOUT tinyint OUTPUT', @rolectOUT=@role_ct OUTPUT
-IF @role_ct = 0
+IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = 'automation_user')
 BEGIN
-	--db_datawriter does not exist, add it
-	SET @xsql = 'ALTER ROLE [db_datawriter] ADD MEMBER [' + @login_name + ']'
-	EXEC sp_executesql @xsql
-	PRINT 'Added db_datawriter role to user'
+	CREATE USER [automation_user] FOR LOGIN [automation_user] WITH DEFAULT_SCHEMA = [dbo]
 END
 
-SET @xsql = '
-SELECT
-@rolectOUT = COUNT(dp2.name)
+ALTER ROLE [db_datareader] ADD MEMBER [automation_user]
+ALTER ROLE [db_datawriter] ADD MEMBER [automation_user]
+ALTER ROLE [db_executor] ADD MEMBER [automation_user]
 
-FROM sys.database_principals AS dp
-JOIN sys.database_role_members AS drm ON dp.principal_id = drm.member_principal_id
-JOIN sys.database_principals AS dp2 ON drm.role_principal_id = dp2.principal_id
-
-WHERE dp2.name = ''db_datareader''
-AND dp.name = ''' + @login_name + ''''
-
-EXEC sp_executesql @xsql, N'@rolectOUT tinyint OUTPUT', @rolectOUT=@role_ct OUTPUT
-IF @role_ct = 0
+----job_owner
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = 'job_owner' AND type_desc = 'SQL_LOGIN')
 BEGIN
-	--db_datareader does not exist, add it
-	SET @xsql = 'ALTER ROLE [db_datareader] ADD MEMBER [' + @login_name + ']'
-	EXEC sp_executesql @xsql
-	PRINT 'Added db_datareader role to user'
+	RAISERROR('The user "job_owner" does not exist', 16, 1)
+	RETURN
 END
 
---the environment login should also have execute permissions on Workflow
-SET @xsql = '
-SELECT
-@execpermOUT = COUNT(dp.name)
-
-FROM sys.database_principals dp
-JOIN sys.database_permissions perm ON dp.principal_id = perm.grantee_principal_id
-
-WHERE perm.permission_name = ''EXECUTE''
-AND dp.name = ''' + @login_name + ''''
-
-EXEC sp_executesql @xsql, N'@execpermOUT tinyint OUTPUT', @execpermOUT=@exec_perm OUTPUT
-IF @exec_perm = 0
+IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = 'job_owner')
 BEGIN
-	--permission does not exist, add it
-	SET @xsql = 'GRANT EXECUTE TO [' + @login_name + ']'
-	EXEC sp_executesql @xsql
-	PRINT 'Added EXECUTE permission on database to user'
+	CREATE USER [job_owner] FOR LOGIN [job_owner] WITH DEFAULT_SCHEMA = [dbo]
 END
+
+ALTER ROLE [db_datareader] ADD MEMBER [job_owner]
+ALTER ROLE [db_datawriter] ADD MEMBER [job_owner]
+ALTER ROLE [db_executor] ADD MEMBER [job_owner]
+ALTER ROLE [db_ddladmin] ADD MEMBER [job_owner]
+ALTER ROLE [db_backupoperator] ADD MEMBER [job_owner]
 
 /* Insert seed data */
 --Schema: dbo

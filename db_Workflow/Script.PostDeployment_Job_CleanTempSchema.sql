@@ -26,7 +26,7 @@ BEGIN
 			@delete_level = 0,
 			@description = N'Clear tables in the ''temp'' schema.',
 			@category_name = N'[Uncategorized (Local)]',
-			@owner_login_name = N'jobowner',
+			@owner_login_name = N'job_owner',
 			@job_id = @jobId OUTPUT
 		IF (@@ERROR <> 0 OR @ReturnCode <> 0) GOTO QuitWithRollback
 
