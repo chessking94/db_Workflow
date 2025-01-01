@@ -1,98 +1,72 @@
 ﻿CREATE FUNCTION [dbo].[scheduleNextRunTime]
 (
-	@scheduleID INT
+    @scheduleID INT
 )
-
 RETURNS DATETIME
 
 AS
 
 BEGIN
-	DECLARE @nextDateTime DATETIME
+    DECLARE @nextDateTime DATETIME
     DECLARE @scheduleActive BIT
     DECLARE @scheduleStartDate DATE
     DECLARE @scheduleEndDate DATE
     DECLARE @scheduleRunTime TIME(0)
-    DECLARE @recurrenceID TINYINT
-    DECLARE @recurrenceInterval TINYINT
     DECLARE @recurrenceName VARCHAR(8)
-    
+    DECLARE @recurrenceInterval TINYINT
+
     --populate details to variables
     SELECT
-    @scheduleActive = s.scheduleActive,
-    @scheduleStartDate = s.scheduleStartDate,
-    @scheduleEndDate = s.scheduleEndDate,
-    @scheduleRunTime = s.scheduleRunTime,
-    @recurrenceName = r.recurrenceName,
-    @recurrenceInterval = s.recurrenceInterval
-
+        @scheduleActive = s.scheduleActive,
+        @scheduleStartDate = s.scheduleStartDate,
+        @scheduleEndDate = s.scheduleEndDate,
+        @scheduleRunTime = s.scheduleRunTime,
+        @recurrenceName = r.recurrenceName,
+        @recurrenceInterval = s.recurrenceInterval
     FROM dbo.Schedules s
     LEFT JOIN dbo.Recurrences r ON
         s.recurrenceID = r.recurrenceID
-
     WHERE s.scheduleID = @scheduleID
 
     IF @scheduleActive = 0 RETURN NULL
     IF ISNULL(@scheduleEndDate, CONVERT(DATE, GETDATE())) < CONVERT(DATE, GETDATE()) RETURN NULL
     IF @recurrenceName = 'One-Time' RETURN NULL
 
-    --reset @scheduleStartDate to the base datetime *yesterday*, to eliminate excessive iterations of this if scheduleStartDate were 3 years ago (for example)
-    IF DATEDIFF(DAY, @scheduleStartDate, GETDATE()) > 0
-    BEGIN
-        SET @scheduleStartDate = CONVERT(DATE, GETDATE() - 1)
-    END
-    SET @nextDateTime = DATEADD(DAY, DATEDIFF(DAY, 0, @scheduleStartDate), CAST(@scheduleRunTime AS DATETIME))  --set base nextDateTime
+    --adjust @scheduleStartDate to avoid excessive iterations
+    IF @recurrenceName = 'Minutely'
+        SET @scheduleStartDate = DATEADD(MINUTE, -(@recurrenceInterval * DATEDIFF(MINUTE, @scheduleStartDate, GETDATE()) / @recurrenceInterval), CAST(@scheduleStartDate AS DATETIME))
+    ELSE IF @recurrenceName = 'Hourly'
+        SET @scheduleStartDate = DATEADD(HOUR, -(@recurrenceInterval * DATEDIFF(HOUR, @scheduleStartDate, GETDATE()) / @recurrenceInterval), CAST(@scheduleStartDate AS DATETIME))
+    ELSE IF @recurrenceName = 'Daily'
+        SET @scheduleStartDate = DATEADD(DAY, -(@recurrenceInterval * DATEDIFF(DAY, @scheduleStartDate, GETDATE()) / @recurrenceInterval), CAST(@scheduleStartDate AS DATETIME))
+    ELSE IF @recurrenceName = 'Weekly'
+        SET @scheduleStartDate = DATEADD(WEEK, -(@recurrenceInterval * DATEDIFF(WEEK, @scheduleStartDate, GETDATE()) / @recurrenceInterval), CAST(@scheduleStartDate AS DATETIME))
+    ELSE IF @recurrenceName = 'Monthly'
+        SET @scheduleStartDate = DATEADD(MONTH, -(@recurrenceInterval * DATEDIFF(MONTH, @scheduleStartDate, GETDATE()) / @recurrenceInterval), CAST(@scheduleStartDate AS DATETIME))
+    ELSE IF @recurrenceName = 'Yearly'
+        SET @scheduleStartDate = DATEADD(YEAR, -(@recurrenceInterval * DATEDIFF(YEAR, @scheduleStartDate, GETDATE()) / @recurrenceInterval), CAST(@scheduleStartDate AS DATETIME))
+
+    --set initial @nextDateTime to adjusted @scheduleStartDate at @scheduleRunTime
+    SET @nextDateTime = DATEADD(DAY, DATEDIFF(DAY, 0, @scheduleStartDate), CAST(@scheduleRunTime AS DATETIME))
 
     --calculate the next run time based on recurrence pattern
-    IF @recurrenceName = 'Minutely'
+    WHILE @nextDateTime <= GETDATE()
     BEGIN
-        WHILE @nextDateTime <= GETDATE()
-        BEGIN
+        IF @recurrenceName = 'Minutely'
             SET @nextDateTime = DATEADD(MINUTE, @recurrenceInterval, @nextDateTime)
-        END
-    END
-
-    ELSE IF @recurrenceName = 'Hourly'
-    BEGIN
-        WHILE @nextDateTime <= GETDATE()
-        BEGIN
+        ELSE IF @recurrenceName = 'Hourly'
             SET @nextDateTime = DATEADD(HOUR, @recurrenceInterval, @nextDateTime)
-        END
-    END
-
-    ELSE IF @recurrenceName = 'Daily'
-    BEGIN
-        WHILE @nextDateTime <= GETDATE()
-        BEGIN
+        ELSE IF @recurrenceName = 'Daily'
             SET @nextDateTime = DATEADD(DAY, @recurrenceInterval, @nextDateTime)
-        END
-    END
-
-    ELSE IF @recurrenceName = 'Weekly'
-    BEGIN
-        WHILE @nextDateTime <= GETDATE()
-        BEGIN
+        ELSE IF @recurrenceName = 'Weekly'
             SET @nextDateTime = DATEADD(WEEK, @recurrenceInterval, @nextDateTime)
-        END
-    END
-
-    ELSE IF @recurrenceName = 'Monthly'
-    BEGIN
-        WHILE @nextDateTime <= GETDATE()
-        BEGIN
+        ELSE IF @recurrenceName = 'Monthly'
             SET @nextDateTime = DATEADD(MONTH, @recurrenceInterval, @nextDateTime)
-        END
+        ELSE IF @recurrenceName = 'Yearly'
+            SET @nextDateTime = DATEADD(YEAR, @recurrenceInterval, @nextDateTime)
     END
 
-    ELSE IF @recurrenceName = 'Yearly'
-    BEGIN
-        WHILE @nextDateTime <= GETDATE()
-        BEGIN
-            SET @nextDateTime = DATEADD(YEAR, @recurrenceInterval, @nextDateTime)
-        END
-    END
-    
-    --ensure that the next run time not after the end date
+    --ensure the next run time is not after the end date
     IF (@scheduleEndDate IS NOT NULL) AND (@nextDateTime > DATEADD(DAY, DATEDIFF(DAY, 0, @scheduleEndDate), CAST(@scheduleRunTime AS DATETIME)))
     BEGIN
         RETURN NULL
